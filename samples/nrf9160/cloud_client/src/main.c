@@ -105,6 +105,10 @@ static void modem_configure(void)
 		if (err) {
 			printk("LTE link could not be established.\n");
 		}
+		else
+		{
+			printk("LTE link OK\n");
+		}
 
 		printk("Connected to LTE network\n");
 
@@ -115,6 +119,8 @@ static void modem_configure(void)
 		}
 
 		printk("PSM mode requested\n");
+#else
+		printk("PSM disabled\n");
 #endif
 	}
 #endif
@@ -133,9 +139,14 @@ void main(void)
 {
 	int err;
 
-	printk("Cloud client has started\n");
-
 	cloud_backend = cloud_get_binding(CONFIG_CLOUD_BACKEND);
+	printk("Cloud client has started 2\n");
+	/**@brief Structure for cloud backend. */
+	/* void *ptr;
+	int cnt = 0;
+    cloud_backend_list_get( &ptr, &cnt );
+	printk("Cloud backend cnt: %d\n",cnt); */
+
 	__ASSERT(cloud_backend != NULL, "%s backend not found",
 		 CONFIG_CLOUD_BACKEND);
 
@@ -143,6 +154,10 @@ void main(void)
 	if (err) {
 		printk("Cloud backend could not be initialized, error: %d\n",
 			err);
+	}
+	else
+	{
+		printk("Cloud backend init OK!\n");
 	}
 
 	work_init();
@@ -154,11 +169,16 @@ void main(void)
 		printk("dk_buttons_init, error: %d\n", err);
 	}
 #endif
-
+	printk("before cloud_connect\n");
 	err = cloud_connect(cloud_backend);
 	if (err) {
 		printk("cloud_connect, error: %d\n", err);
 	}
+	else
+	{
+		printk("cloud_connect OK\n");
+	}
+
 
 	struct pollfd fds[] = {
 		{
@@ -166,40 +186,91 @@ void main(void)
 			.events = POLLIN
 		}
 	};
+	int i = 0;
 
+	bool conn = true;
 	while (true) {
+		if( !conn )
+		{
+			printk("conn dropped, try cloud_connect again\n");
+			err = cloud_connect(cloud_backend);
+			if (err) {
+				printk("cloud_connect, error: %d\n", err);
+			}
+			else
+			{
+				printk("cloud_connect OK\n");
+			}
+		}
+
+		i++;
+		if( (( i% 100 ) ==0) && (cloud_keepalive_time_left(cloud_backend) == 0) )
+		{
+			printk("while loop i = %u , cloud_keepalive_time_left stuck at 0ms\n",i);
+		}
+		else if( (cloud_keepalive_time_left(cloud_backend) != 0) )
+		{
+			printk("while loop i = %u , cloud_keepalive_time_left = %d ms\n",i,cloud_keepalive_time_left(cloud_backend));
+		}
 		err = poll(fds, ARRAY_SIZE(fds),
 			   cloud_keepalive_time_left(cloud_backend));
 		if (err < 0) {
 			printk("poll() returned an error: %d\n", err);
 			continue;
 		}
+		else
+		{
+			if( ( i % 0xFF == 0) )
+			printk("poll() OK!\n", err);
+		}
 
 		if (err == 0) {
 			cloud_ping(cloud_backend);
-			continue;
+		}
+		{
+			printk("cloud_ping OK!\n", err);
 		}
 
 		if ((fds[0].revents & POLLIN) == POLLIN) {
 			cloud_input(cloud_backend);
+			printk("process incoming data!\n", err);
+		}
+		else
+		{
+			printk("Socket no POLLIN\n", err);
 		}
 
 		if ((fds[0].revents & POLLNVAL) == POLLNVAL) {
 			printk("Socket error: POLLNVAL\n");
 			printk("The cloud socket was unexpectedly closed.\n");
-			return;
+			conn = false;
+			continue;
+		}
+		else
+		{
+			printk("Socket no POLLNVAL\n");
 		}
 
 		if ((fds[0].revents & POLLHUP) == POLLHUP) {
 			printk("Socket error: POLLHUP\n");
 			printk("Connection was closed by the cloud.\n");
-			return;
+			conn = false;
+			continue;
+		}
+		else
+		{
+			printk("Socket no POLLHUP\n");
 		}
 
 		if ((fds[0].revents & POLLERR) == POLLERR) {
 			printk("Socket error: POLLERR\n");
 			printk("Cloud connection was unexpectedly closed.\n");
-			return;
+			conn = false;
+			continue;
+		}
+		else
+		{
+			printk("Socket no POLLERR\n");
 		}
 	}
 }

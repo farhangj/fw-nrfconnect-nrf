@@ -8,7 +8,7 @@ menu "Cloud Client Sample Settings"
 
 config CLOUD_BACKEND
 	string "String that selects the cloud backend to be used"
-	default "NRF_CLOUD"
+	default "AWS_IOT"
 
 config CLOUD_MESSAGE
 	string "Custom message published periodically to cloud"

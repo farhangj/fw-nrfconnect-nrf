@@ -592,6 +592,10 @@ static int client_broker_init(struct mqtt_client *const client)
 	if (err) {
 		return err;
 	}
+	else
+	{
+		printk("broker_init OK!\n");
+	}
 
 	client->broker			= &broker;
 	client->evt_cb			= mqtt_evt_handler;
@@ -699,10 +703,14 @@ int aws_iot_connect(struct aws_iot_config *const config)
 		LOG_ERR("client_broker_init, error: %d", err);
 		return err;
 	}
+	else
+	{
+		LOG_INF("client_broker_init OK!");
+	}
 
 	err = mqtt_connect(&client);
 	if (err) {
-		LOG_ERR("mqtt_connect, error: %d", err);
+		LOG_ERR("aws mqtt_connect, error: %d", err);
 		return err;
 	}
 

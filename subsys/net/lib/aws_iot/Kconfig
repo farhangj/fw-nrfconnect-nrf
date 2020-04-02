@@ -20,9 +20,11 @@ config AWS_IOT_STATIC_IPV4_ADDR
 
 config AWS_IOT_SEC_TAG
 	int "Security tag to use for AWS IoT connection"
+	default 16842750
 
 config AWS_IOT_BROKER_HOST_NAME
 	string "AWS IoT server hostname"
+	default "aojm7vwzhv9er-ats.iot.us-west-1.amazonaws.com"
 
 config AWS_IOT_PORT
 	int "AWS server port"
@@ -48,35 +50,42 @@ config AWS_IOT_APP_SUBSCRIPTION_LIST_COUNT
 
 config AWS_IOT_CLIENT_ID_MAX_LEN
 	int "Maximum length of cliend id"
-	default 20
+	default 100
 
 config AWS_IOT_CLIENT_ID_STATIC
 	string "Static client id"
-	default "my-thing"
+	default "arn:aws:iot:us-west-1:283027631661:thing/nRF9160DK-1"
 
 config AWS_IOT_CLIENT_ID_APP
 	bool "Client ID provided by application run-time"
 
 config AWS_IOT_TOPIC_GET_ACCEPTED_SUBSCRIBE
 	bool "Subscribe to get accepted shadow topic, $aws/things/<thing-name>/shadow/get/accepted"
+	default y
 
 config AWS_IOT_TOPIC_GET_REJECTED_SUBSCRIBE
 	bool "Subscribe to get rejected shadow topic, $aws/things/<thing-name>/shadow/get/rejected"
+	default y
 
 config AWS_IOT_TOPIC_UPDATE_ACCEPTED_SUBSCRIBE
 	bool "Subscribe to update accepted shadow topic, $aws/things/<thing-name>/shadow/update/accepted"
+	default y
 
 config AWS_IOT_TOPIC_UPDATE_REJECTED_SUBSCRIBE
 	bool "Subscribe to update rejected shadow topic, $aws/things/<thing-name>/shadow/update/rejected"
+	default y
 
 config AWS_IOT_TOPIC_UPDATE_DELTA_SUBSCRIBE
 	bool "Subscribe to update delta shadow topic, $aws/things/<thing-name>/shadow/update/delta"
+	default y
 
 config AWS_IOT_TOPIC_DELETE_ACCEPTED_SUBSCRIBE
 	bool "Subscribe to delete accepted shadow topic, $aws/things/<thing-name>/shadow/delete/accepted"
+	default y
 
 config AWS_IOT_TOPIC_DELETE_REJECTED_SUBSCRIBE
 	bool "Subscribe to delete rejected shadow topic, $aws/things/<thing-name>/shadow/delete/rejected"
+	default y
 
 module=AWS_IOT
 module-dep=LOG
