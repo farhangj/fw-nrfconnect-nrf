@@ -20,11 +20,11 @@ config AWS_IOT_STATIC_IPV4_ADDR
 
 config AWS_IOT_SEC_TAG
 	int "Security tag to use for AWS IoT connection"
-	default 16842750
+	default 16842748
 
 config AWS_IOT_BROKER_HOST_NAME
 	string "AWS IoT server hostname"
-	default "aojm7vwzhv9er-ats.iot.us-west-1.amazonaws.com"
+	default "ahlaoaccwasg8-ats.iot.us-west-1.amazonaws.com"
 
 config AWS_IOT_PORT
 	int "AWS server port"
@@ -54,7 +54,7 @@ config AWS_IOT_CLIENT_ID_MAX_LEN
 
 config AWS_IOT_CLIENT_ID_STATIC
 	string "Static client id"
-	default "arn:aws:iot:us-west-1:283027631661:thing/nRF9160DK-1"
+	default "arn:aws:iot:us-west-1:615795345188:thing/thing1"
 
 config AWS_IOT_CLIENT_ID_APP
 	bool "Client ID provided by application run-time"
